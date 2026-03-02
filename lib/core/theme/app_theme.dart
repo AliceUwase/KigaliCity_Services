@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF00A36C); // A vibrant green
-  static const Color secondaryColor = Color(0xFF007FFF); // A nice blue
-  static const Color accentColor = Color(0xFFFFA500); // Orange for highlights
+  static const Color primaryColor = Color(
+    0xFF1557F2,
+  ); // Vibrant Blue from screenshots
+  static const Color backgroundColor = Color(0xFFF8F9FA);
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -11,7 +12,6 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
         primary: primaryColor,
-        secondary: secondaryColor,
         surface: Colors.white,
       ),
       appBarTheme: const AppBarTheme(

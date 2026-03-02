@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  bool _locationNotifications = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -16,69 +23,122 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildInfoCard(
-                    icon: Icons.email_outlined,
-                    label: 'Email',
-                    value: 'johndoe@example.com',
+                  const Text(
+                    'Profile Information',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  _buildInfoCard(
-                    icon: Icons.phone_outlined,
-                    label: 'Phone',
-                    value: '+250 788 123 456',
+                  _buildProfileInfoItem(
+                    Icons.email_outlined,
+                    'Email',
+                    'user@kigali.rw',
                   ),
-                  const SizedBox(height: 16),
-                  _buildInfoCard(
-                    icon: Icons.location_on_outlined,
-                    label: 'Location',
-                    value: 'Kigali, Rwanda',
+                  _buildProfileInfoItem(
+                    Icons.phone_outlined,
+                    'Phone',
+                    '+250 788 123 456',
                   ),
+                  _buildProfileInfoItem(
+                    Icons.location_on_outlined,
+                    'Location',
+                    'Kigali, Rwanda',
+                  ),
+
                   const SizedBox(height: 32),
                   const Text(
-                    'SETTINGS',
+                    'Notifications',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                      letterSpacing: 1.2,
+                      color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  _buildSettingTile(
-                    icon: Icons.settings_outlined,
-                    title: 'Account Settings',
-                    onTap: () {},
-                  ),
-                  _buildSettingTile(
-                    icon: Icons.notifications_none_outlined,
-                    title: 'Notifications',
-                    onTap: () {},
-                  ),
-                  _buildSettingTile(
-                    icon: Icons.security_outlined,
-                    title: 'Privacy & Security',
-                    onTap: () {},
-                  ),
-                  _buildSettingTile(
-                    icon: Icons.help_outline,
-                    title: 'Help & Support',
-                    onTap: () {},
-                  ),
-                  const SizedBox(height: 24),
-                  Center(
-                    child: TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        'Logout',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.green[50],
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.notifications_outlined,
+                            color: Colors.green,
+                            size: 20,
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Location Notifications',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              Text(
+                                'Get notified about nearby services and places',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Switch(
+                          value: _locationNotifications,
+                          onChanged: (value) =>
+                              setState(() => _locationNotifications = value),
+                          activeColor: const Color(0xFF1557F2),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 40),
+
+                  if (_locationNotifications) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.green[50]?.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: Colors.green.withOpacity(0.2),
+                        ),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.check, color: Colors.green, size: 16),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              "You'll receive notifications when new places are added near your location.",
+                              style: TextStyle(
+                                color: Colors.green,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -91,60 +151,78 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 60, 20, 40),
+      padding: const EdgeInsets.fromLTRB(20, 40, 20, 32),
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF00A36C), Color(0xFF007FFF)],
+        color: Color(0xFF1557F2),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(32),
+          bottomRight: Radius.circular(32),
         ),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.white24,
-            child: Icon(Icons.person, size: 60, color: Colors.white),
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           const Text(
-            'John Doe',
+            'Settings',
             style: TextStyle(
               color: Colors.white,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const Text(
-            'Kigali Resident',
-            style: TextStyle(color: Colors.white70, fontSize: 16),
+          const SizedBox(height: 24),
+          // Profile Card
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: [
+                const CircleAvatar(
+                  radius: 35,
+                  backgroundColor: Colors.white24,
+                  child: Icon(Icons.person, size: 40, color: Colors.white),
+                ),
+                const SizedBox(width: 16),
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Demo User',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      'Kigali Resident',
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildInfoCard({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
+  Widget _buildProfileInfoItem(IconData icon, String label, String value) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[50],
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.grey[600]),
+          Icon(icon, color: Colors.grey[600], size: 20),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,28 +234,15 @@ class ProfileScreen extends StatelessWidget {
               Text(
                 value,
                 style: const TextStyle(
-                  fontSize: 16,
+                  fontSize: 15,
                   fontWeight: FontWeight.w500,
+                  color: Colors.black87,
                 ),
               ),
             ],
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildSettingTile({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.black87),
-      title: Text(title),
-      trailing: const Icon(Icons.chevron_right, size: 20),
-      onTap: onTap,
-      contentPadding: EdgeInsets.zero,
     );
   }
 }
