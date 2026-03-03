@@ -6,6 +6,9 @@ class PlaceCard extends StatelessWidget {
   final String phone;
   final double rating;
   final String imageUrl;
+  final VoidCallback? onTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const PlaceCard({
     super.key,
@@ -14,111 +17,175 @@ class PlaceCard extends StatelessWidget {
     required this.phone,
     required this.rating,
     this.imageUrl = '',
+    this.onTap,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withOpacity(0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image Section
-          Stack(
-            children: [
-              Container(
-                height: 160,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
-                  ),
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.image_outlined,
-                    color: Colors.grey,
-                    size: 40,
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 12,
-                right: 12,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.star, color: Colors.orange, size: 16),
-                      const SizedBox(width: 4),
-                      Text(
-                        rating.toString(),
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          // Details Section
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.withOpacity(0.2)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image Section
+            Stack(
               children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                Container(
+                  height: 160,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.image_outlined,
+                      color: Colors.grey,
+                      size: 40,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                _buildInfoRow(Icons.location_on_outlined, address),
-                const SizedBox(height: 4),
-                _buildInfoRow(
-                  Icons.access_time,
-                  'See details',
-                  color: Colors.blue,
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.orange, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          rating.toString(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 4),
-                _buildInfoRow(Icons.phone_outlined, phone),
+                if (onEdit != null || onDelete != null)
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: Row(
+                      children: [
+                        if (onEdit != null)
+                          GestureDetector(
+                            onTap: onEdit,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 4,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.edit_outlined,
+                                color: Color(0xFF1557F2),
+                                size: 18,
+                              ),
+                            ),
+                          ),
+                        if (onEdit != null && onDelete != null)
+                          const SizedBox(width: 8),
+                        if (onDelete != null)
+                          GestureDetector(
+                            onTap: onDelete,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 4,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.delete_outline,
+                                color: Colors.red,
+                                size: 18,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
               ],
             ),
-          ),
-        ],
+            // Details Section
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildInfoRow(Icons.location_on_outlined, address),
+                  const SizedBox(height: 4),
+                  _buildInfoRow(
+                    Icons.access_time,
+                    'See details',
+                    color: Colors.blue,
+                  ),
+                  const SizedBox(height: 4),
+                  _buildInfoRow(Icons.phone_outlined, phone),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

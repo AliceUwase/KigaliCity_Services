@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/place_card.dart';
 import '../widgets/category_filter_chip.dart';
+import 'place_details_screen.dart';
 import '../../logic/cubits/directory/directory_cubit.dart';
 import '../../logic/cubits/directory/directory_state.dart';
 
@@ -23,7 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
       'rating': 4.5,
       'category': 'Hospital',
       'description':
-          'Advanced medical services and specialized care in Kigali.',
+          'Leading tertiary referral hospital in Rwanda offering comprehensive medical services including emergency care, surgery, maternity, and specialized treatments.',
+      'latitude': '-1.9536',
+      'longitude': '30.0927',
     },
     {
       'name': 'Rwanda Military Hospital',
@@ -32,7 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
       'rating': 4.5,
       'category': 'Hospital',
       'description':
-          'Comprehensive healthcare services for military and civilians.',
+          'Comprehensive healthcare services for military personnel and the general public, providing high-quality medical treatment.',
+      'latitude': '-1.9644',
+      'longitude': '30.1234',
     },
     {
       'name': 'Heaven Restaurant',
@@ -40,7 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
       'phone': '+250 788 123 002',
       'rating': 4.8,
       'category': 'Restaurant',
-      'description': 'Upscale dining with a beautiful view and local flavors.',
+      'description':
+          'Upscale dining with a beautiful view and local flavors. Experience the best of Rwandan hospitality and international cuisine.',
+      'latitude': '-1.9441',
+      'longitude': '30.0619',
     },
     {
       'name': 'Inzora Rooftop Café',
@@ -49,7 +57,9 @@ class _HomeScreenState extends State<HomeScreen> {
       'rating': 4.7,
       'category': 'Café',
       'description':
-          'Cozy rooftop café perfect for working and enjoying coffee.',
+          'Cozy rooftop café perfect for working and enjoying coffee. Known for its delicious baked goods and great coffee selection.',
+      'latitude': '-1.9482',
+      'longitude': '30.0621',
     },
     {
       'name': 'Kigali Central Police',
@@ -58,7 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
       'rating': 4.2,
       'category': 'Police Station',
       'description':
-          'Central police headquarters for public safety and assistance.',
+          'Central police headquarters for public safety and assistance. Dedicated to serving the community of Kigali.',
+      'latitude': '-1.9439',
+      'longitude': '30.0594',
     },
     {
       'name': 'Repub Lounge',
@@ -66,7 +78,10 @@ class _HomeScreenState extends State<HomeScreen> {
       'phone': '+250 788 123 005',
       'rating': 4.6,
       'category': 'Restaurant',
-      'description': 'Famous for its brochettes and vibrant atmosphere.',
+      'description':
+          'Famous for its brochettes and vibrant atmosphere. A must-visit spot for anyone looking for authentic local food.',
+      'latitude': '-1.9445',
+      'longitude': '30.0892',
     },
   ];
 
@@ -143,6 +158,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               address: place['address'],
                               phone: place['phone'],
                               rating: place['rating'],
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PlaceDetailsScreen(place: place),
+                                  ),
+                                );
+                              },
                             );
                           },
                         ),
