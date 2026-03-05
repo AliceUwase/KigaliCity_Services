@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../data/models/place_model.dart';
+import '../../logic/cubits/directory/directory_cubit.dart';
 
 class AddListingScreen extends StatefulWidget {
-  final Map<String, dynamic>? place;
+  final Place? place;
 
   const AddListingScreen({super.key, this.place});
 
@@ -36,15 +39,15 @@ class _AddListingScreenState extends State<AddListingScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.place?['name']);
-    _addressController = TextEditingController(text: widget.place?['address']);
-    _phoneController = TextEditingController(text: widget.place?['phone']);
+    _nameController = TextEditingController(text: widget.place?.name);
+    _addressController = TextEditingController(text: widget.place?.address);
+    _phoneController = TextEditingController(text: widget.place?.phone);
     _descriptionController = TextEditingController(
-      text: widget.place?['description'],
+      text: widget.place?.description,
     );
-    _latController = TextEditingController(text: widget.place?['latitude']);
-    _lngController = TextEditingController(text: widget.place?['longitude']);
-    _selectedCategory = widget.place?['category'];
+    _latController = TextEditingController(text: widget.place?.latitude);
+    _lngController = TextEditingController(text: widget.place?.longitude);
+    _selectedCategory = widget.place?.category;
   }
 
   @override
@@ -149,6 +152,27 @@ class _AddListingScreenState extends State<AddListingScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        final newPlace = Place(
+                          id: isEditMode
+                              ? widget.place!.id
+                              : DateTime.now().millisecondsSinceEpoch
+                                    .toString(),
+                          name: _nameController.text,
+                          address: _addressController.text,
+                          phone: _phoneController.text,
+                          category: _selectedCategory ?? 'Other',
+                          description: _descriptionController.text,
+                          latitude: _latController.text,
+                          longitude: _lngController.text,
+                          rating: widget.place?.rating ?? 0.0,
+                        );
+
+                        if (isEditMode) {
+                          context.read<DirectoryCubit>().updatePlace(newPlace);
+                        } else {
+                          context.read<DirectoryCubit>().addPlace(newPlace);
+                        }
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
@@ -264,7 +288,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: DropdownButtonFormField<String>(
-        value: _selectedCategory,
+        initialValue: _selectedCategory,
         hint: const Text(
           'Select a category',
           style: TextStyle(color: Color(0xFF94A3B8), fontSize: 14),

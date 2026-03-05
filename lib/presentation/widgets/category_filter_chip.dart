@@ -31,7 +31,7 @@ class CategoryFilterChip extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: const Color(0xFF1557F2).withOpacity(0.3),
+                    color: const Color(0xFF1557F2).withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -54,7 +54,7 @@ class CategoryFilterChip extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? Colors.white.withOpacity(0.2)
+                    ? Colors.white.withValues(alpha: 0.2)
                     : Colors.grey[100],
                 borderRadius: BorderRadius.circular(10),
               ),

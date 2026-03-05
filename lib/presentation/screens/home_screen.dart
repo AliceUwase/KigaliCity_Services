@@ -16,86 +16,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> _mockData = [
-    {
-      'name': 'King Faisal Hospital',
-      'address': 'KG 544 St, Kigali',
-      'phone': '+250 788 123 000',
-      'rating': 4.5,
-      'category': 'Hospital',
-      'description':
-          'Leading tertiary referral hospital in Rwanda offering comprehensive medical services including emergency care, surgery, maternity, and specialized treatments.',
-      'latitude': '-1.9536',
-      'longitude': '30.0927',
-    },
-    {
-      'name': 'Rwanda Military Hospital',
-      'address': 'KN 4 Ave, Kigali',
-      'phone': '+250 788 123 001',
-      'rating': 4.5,
-      'category': 'Hospital',
-      'description':
-          'Comprehensive healthcare services for military personnel and the general public, providing high-quality medical treatment.',
-      'latitude': '-1.9644',
-      'longitude': '30.1234',
-    },
-    {
-      'name': 'Heaven Restaurant',
-      'address': 'KN 29 St, Kigali',
-      'phone': '+250 788 123 002',
-      'rating': 4.8,
-      'category': 'Restaurant',
-      'description':
-          'Upscale dining with a beautiful view and local flavors. Experience the best of Rwandan hospitality and international cuisine.',
-      'latitude': '-1.9441',
-      'longitude': '30.0619',
-    },
-    {
-      'name': 'Inzora Rooftop Café',
-      'address': 'KG 5 Ave, Kigali',
-      'phone': '+250 788 123 003',
-      'rating': 4.7,
-      'category': 'Café',
-      'description':
-          'Cozy rooftop café perfect for working and enjoying coffee. Known for its delicious baked goods and great coffee selection.',
-      'latitude': '-1.9482',
-      'longitude': '30.0621',
-    },
-    {
-      'name': 'Kigali Central Police',
-      'address': 'KN 3 Rd, Kigali',
-      'phone': '+250 788 123 004',
-      'rating': 4.2,
-      'category': 'Police Station',
-      'description':
-          'Central police headquarters for public safety and assistance. Dedicated to serving the community of Kigali.',
-      'latitude': '-1.9439',
-      'longitude': '30.0594',
-    },
-    {
-      'name': 'Repub Lounge',
-      'address': 'KG 674 St, Kigali',
-      'phone': '+250 788 123 005',
-      'rating': 4.6,
-      'category': 'Restaurant',
-      'description':
-          'Famous for its brochettes and vibrant atmosphere. A must-visit spot for anyone looking for authentic local food.',
-      'latitude': '-1.9445',
-      'longitude': '30.0892',
-    },
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize data in the Cubit
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<DirectoryCubit>().setPlaces(_mockData);
-      }
-    });
-  }
-
   @override
   void dispose() {
     _searchController.dispose();
@@ -154,10 +74,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemBuilder: (context, index) {
                             final place = filteredList[index];
                             return PlaceCard(
-                              name: place['name'],
-                              address: place['address'],
-                              phone: place['phone'],
-                              rating: place['rating'],
+                              name: place.name,
+                              address: place.address,
+                              phone: place.phone,
+                              rating: place.rating,
                               onTap: () {
                                 Navigator.push(
                                   context,

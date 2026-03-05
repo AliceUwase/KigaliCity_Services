@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../data/models/place_model.dart';
+import '../../logic/cubits/directory/directory_cubit.dart';
+import '../../logic/cubits/directory/directory_state.dart';
 import '../widgets/place_card.dart';
 import 'add_listing_screen.dart';
 import 'place_details_screen.dart';
@@ -8,134 +12,102 @@ class MyListingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return BlocBuilder<DirectoryCubit, DirectoryState>(
+      builder: (context, state) {
+        final listings = state.allPlaces;
+
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildHeader(context),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'All Listings',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'All Listings',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          Text(
+                            '${listings.length} total',
+                            style: TextStyle(
+                              color: Colors.grey[500],
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      if (listings.isEmpty)
+                        _buildEmptyState()
+                      else
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: listings.length,
+                          itemBuilder: (context, index) {
+                            final place = listings[index];
+                            return PlaceCard(
+                              name: place.name,
+                              address: place.address,
+                              phone: place.phone,
+                              rating: place.rating,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PlaceDetailsScreen(place: place),
+                                  ),
+                                );
+                              },
+                              onEdit: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        AddListingScreen(place: place),
+                                  ),
+                                );
+                              },
+                              onDelete: () {
+                                _showDeleteDialog(context, place);
+                              },
+                            );
+                          },
                         ),
-                      ),
-                      Text(
-                        '18 total',
-                        style: TextStyle(color: Colors.grey[500], fontSize: 13),
-                      ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  // List of user listings
-                  PlaceCard(
-                    name: 'King Faisal Hospital',
-                    address: 'KG 544 St, Kigali',
-                    phone: '+250 788 123 000',
-                    rating: 4.5,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PlaceDetailsScreen(
-                            place: {
-                              'name': 'King Faisal Hospital',
-                              'address': 'KG 544 St, Kigali',
-                              'phone': '+250 788 123 000',
-                              'rating': 4.5,
-                              'description':
-                                  'Leading tertiary referral hospital in Rwanda offering comprehensive medical services including emergency care, surgery, maternity, and specialized treatments.',
-                              'latitude': '-1.9536',
-                              'longitude': '30.0927',
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                    onEdit: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AddListingScreen(
-                            place: {
-                              'name': 'King Faisal Hospital',
-                              'address': 'KG 544 St, Kigali',
-                              'phone': '+250 788 123 000',
-                              'rating': 4.5,
-                              'category': 'Hospital',
-                              'description':
-                                  'Leading tertiary referral hospital in Rwanda offering comprehensive medical services including emergency care, surgery, maternity, and specialized treatments.',
-                              'latitude': '-1.9536',
-                              'longitude': '30.0927',
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                    onDelete: () {
-                      _showDeleteDialog(context, 'King Faisal Hospital');
-                    },
-                  ),
-                  PlaceCard(
-                    name: 'Rwanda Military Hospital',
-                    address: 'KN 4 Ave, Kigali',
-                    phone: '+250 788 123 001',
-                    rating: 4.5,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PlaceDetailsScreen(
-                            place: {
-                              'name': 'Rwanda Military Hospital',
-                              'address': 'KN 4 Ave, Kigali',
-                              'phone': '+250 788 123 001',
-                              'rating': 4.5,
-                              'description':
-                                  'Comprehensive healthcare services for military personnel and the general public, providing high-quality medical treatment.',
-                              'latitude': '-1.9644',
-                              'longitude': '30.1234',
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                    onEdit: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AddListingScreen(
-                            place: {
-                              'name': 'Rwanda Military Hospital',
-                              'address': 'KN 4 Ave, Kigali',
-                              'phone': '+250 788 123 001',
-                              'rating': 4.5,
-                              'category': 'Hospital',
-                              'description':
-                                  'Comprehensive healthcare services for military personnel and the general public, providing high-quality medical treatment.',
-                              'latitude': '-1.9644',
-                              'longitude': '30.1234',
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                    onDelete: () {
-                      _showDeleteDialog(context, 'Rwanda Military Hospital');
-                    },
-                  ),
-                ],
-              ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40),
+        child: Column(
+          children: [
+            Icon(Icons.list_alt, size: 64, color: Colors.grey[300]),
+            const SizedBox(height: 16),
+            Text(
+              'No listings yet',
+              style: TextStyle(color: Colors.grey[500], fontSize: 16),
             ),
           ],
         ),
@@ -143,10 +115,10 @@ class MyListingsScreen extends StatelessWidget {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, String placeName) {
+  void _showDeleteDialog(BuildContext context, Place place) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -166,7 +138,7 @@ class MyListingsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Are you sure you want to delete this listing? This action cannot be undone.',
+                  'Are you sure you want to delete "${place.name}"? This action cannot be undone.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
@@ -180,10 +152,11 @@ class MyListingsScreen extends StatelessWidget {
                   height: 48,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      context.read<DirectoryCubit>().deletePlace(place.id);
+                      Navigator.pop(dialogContext);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Deleting $placeName...'),
+                          content: Text('Listing "${place.name}" deleted'),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -209,7 +182,7 @@ class MyListingsScreen extends StatelessWidget {
                   width: double.infinity,
                   height: 48,
                   child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.pop(dialogContext),
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.grey[300]!),
                       shape: RoundedRectangleBorder(

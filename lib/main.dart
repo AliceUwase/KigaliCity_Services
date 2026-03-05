@@ -3,24 +3,31 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/theme/app_theme.dart';
 import 'presentation/screens/auth/login_screen.dart';
 import 'logic/cubits/directory/directory_cubit.dart';
+import 'data/repositories/place_repository.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const KigaliCityServicesApp());
+  final placeRepository = PlaceRepository();
+  runApp(KigaliCityServicesApp(placeRepository: placeRepository));
 }
 
 class KigaliCityServicesApp extends StatelessWidget {
-  const KigaliCityServicesApp({super.key});
+  final PlaceRepository placeRepository;
+
+  const KigaliCityServicesApp({super.key, required this.placeRepository});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => DirectoryCubit(),
-      child: MaterialApp(
-        title: 'Kigali City Services',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: const LoginScreen(),
+    return MultiRepositoryProvider(
+      providers: [RepositoryProvider.value(value: placeRepository)],
+      child: BlocProvider(
+        create: (context) => DirectoryCubit(placeRepository),
+        child: MaterialApp(
+          title: 'Kigali City Services',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          home: const LoginScreen(),
+        ),
       ),
     );
   }
