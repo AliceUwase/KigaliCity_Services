@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/models/place_model.dart';
 import '../../logic/cubits/directory/directory_cubit.dart';
 
@@ -152,11 +153,11 @@ class _AddListingScreenState extends State<AddListingScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
+                        final String? currentUserId =
+                            FirebaseAuth.instance.currentUser?.uid;
+
                         final newPlace = Place(
-                          id: isEditMode
-                              ? widget.place!.id
-                              : DateTime.now().millisecondsSinceEpoch
-                                    .toString(),
+                          id: isEditMode ? widget.place!.id : '',
                           name: _nameController.text,
                           address: _addressController.text,
                           phone: _phoneController.text,
@@ -165,6 +166,12 @@ class _AddListingScreenState extends State<AddListingScreen> {
                           latitude: _latController.text,
                           longitude: _lngController.text,
                           rating: widget.place?.rating ?? 0.0,
+                          userId: isEditMode
+                              ? widget.place!.userId
+                              : currentUserId,
+                          timestamp: isEditMode
+                              ? widget.place!.timestamp
+                              : DateTime.now(),
                         );
 
                         if (isEditMode) {

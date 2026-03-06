@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class PlaceCard extends StatelessWidget {
   final String name;
@@ -6,6 +7,7 @@ class PlaceCard extends StatelessWidget {
   final String phone;
   final double rating;
   final String imageUrl;
+  final String? userId; // Added userId for ownership check
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
@@ -17,6 +19,7 @@ class PlaceCard extends StatelessWidget {
     required this.phone,
     required this.rating,
     this.imageUrl = '',
+    this.userId,
     this.onTap,
     this.onEdit,
     this.onDelete,
@@ -24,6 +27,10 @@ class PlaceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Check if the current user is the owner
+    final String? currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final bool isOwner = userId != null && currentUserId == userId;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -84,7 +91,8 @@ class PlaceCard extends StatelessWidget {
             ),
             // Right Side: Actions + Chevron
             const SizedBox(width: 8),
-            if (onEdit != null || onDelete != null) ...[
+            // Only show edit/delete if the user is the owner
+            if (isOwner && (onEdit != null || onDelete != null)) ...[
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -116,7 +124,7 @@ class PlaceCard extends StatelessWidget {
                 ],
               ),
             ],
-            if (onEdit == null && onDelete == null)
+            if (!isOwner || (onEdit == null && onDelete == null))
               Icon(Icons.chevron_right, color: Colors.grey[400], size: 20),
           ],
         ),

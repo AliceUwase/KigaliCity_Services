@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'directory_state.dart';
 import '../../../data/models/place_model.dart';
@@ -5,14 +6,17 @@ import '../../../data/repositories/place_repository.dart';
 
 class DirectoryCubit extends Cubit<DirectoryState> {
   final PlaceRepository _repository;
+  StreamSubscription? _subscription;
 
   DirectoryCubit(this._repository) : super(DirectoryState.initial()) {
-    fetchPlaces();
+    _subscribeToPlaces();
   }
 
-  Future<void> fetchPlaces() async {
-    final places = await _repository.getAllPlaces();
-    emit(state.copyWith(allPlaces: places));
+  void _subscribeToPlaces() {
+    _subscription?.cancel();
+    _subscription = _repository.getPlacesStream().listen((places) {
+      emit(state.copyWith(allPlaces: places));
+    });
   }
 
   void selectCategory(String category) {
@@ -23,20 +27,21 @@ class DirectoryCubit extends Cubit<DirectoryState> {
     emit(state.copyWith(searchQuery: query));
   }
 
-  void addPlace(Place place) {
-    final updatedList = List<Place>.from(state.allPlaces)..add(place);
-    emit(state.copyWith(allPlaces: updatedList));
+  Future<void> addPlace(Place place) async {
+    await _repository.addPlace(place);
   }
 
-  void updatePlace(Place updatedPlace) {
-    final updatedList = state.allPlaces.map((p) {
-      return p.id == updatedPlace.id ? updatedPlace : p;
-    }).toList();
-    emit(state.copyWith(allPlaces: updatedList));
+  Future<void> updatePlace(Place updatedPlace) async {
+    await _repository.updatePlace(updatedPlace);
   }
 
-  void deletePlace(String id) {
-    final updatedList = state.allPlaces.where((p) => p.id != id).toList();
-    emit(state.copyWith(allPlaces: updatedList));
+  Future<void> deletePlace(String id) async {
+    await _repository.deletePlace(id);
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
   }
 }

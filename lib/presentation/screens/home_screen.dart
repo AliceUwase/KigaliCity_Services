@@ -78,6 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               address: place.address,
                               phone: place.phone,
                               rating: place.rating,
+                              userId: place.userId,
                               onTap: () {
                                 Navigator.push(
                                   context,

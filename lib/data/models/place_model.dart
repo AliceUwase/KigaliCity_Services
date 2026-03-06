@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Place {
   final String id;
   final String name;
@@ -9,6 +11,8 @@ class Place {
   final String? latitude;
   final String? longitude;
   final String? imageUrl;
+  final String? userId;
+  final DateTime? timestamp;
 
   Place({
     required this.id,
@@ -21,6 +25,8 @@ class Place {
     this.latitude,
     this.longitude,
     this.imageUrl,
+    this.userId,
+    this.timestamp,
   });
 
   factory Place.fromMap(Map<String, dynamic> map, String id) {
@@ -35,6 +41,12 @@ class Place {
       latitude: map['latitude'],
       longitude: map['longitude'],
       imageUrl: map['imageUrl'],
+      userId: map['userId'],
+      timestamp: map['timestamp'] != null
+          ? (map['timestamp'] is Timestamp
+                ? (map['timestamp'] as Timestamp).toDate()
+                : DateTime.tryParse(map['timestamp'].toString()))
+          : null,
     );
   }
 
@@ -49,6 +61,8 @@ class Place {
       'latitude': latitude,
       'longitude': longitude,
       'imageUrl': imageUrl,
+      'userId': userId,
+      'timestamp': timestamp != null ? Timestamp.fromDate(timestamp!) : null,
     };
   }
 
@@ -63,6 +77,8 @@ class Place {
     String? latitude,
     String? longitude,
     String? imageUrl,
+    String? userId,
+    DateTime? timestamp,
   }) {
     return Place(
       id: id ?? this.id,
@@ -75,6 +91,8 @@ class Place {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       imageUrl: imageUrl ?? this.imageUrl,
+      userId: userId ?? this.userId,
+      timestamp: timestamp ?? this.timestamp,
     );
   }
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "617349292898",
+    "project_id": "kigalicity-f08ec",
+    "storage_bucket": "kigalicity-f08ec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:617349292898:android:cdc36a975dc99879d7823b",
+        "android_client_info": {
+          "package_name": "com.example.kigalicityservices"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvIQ2Ehwkqj03zDTTXtyQBIkCs89D30QY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

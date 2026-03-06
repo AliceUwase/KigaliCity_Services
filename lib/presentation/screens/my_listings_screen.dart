@@ -62,6 +62,7 @@ class MyListingsScreen extends StatelessWidget {
                               address: place.address,
                               phone: place.phone,
                               rating: place.rating,
+                              userId: place.userId,
                               onTap: () {
                                 Navigator.push(
                                   context,

@@ -1,29 +1,45 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/place_model.dart';
 
 class PlaceRepository {
-  final List<Place> _places = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final String _collection = 'places';
 
+  Stream<List<Place>> getPlacesStream() {
+    return _firestore
+        .collection(_collection)
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs.map((doc) {
+            return Place.fromMap(doc.data(), doc.id);
+          }).toList();
+        });
+  }
+
+  // Fallback for one-time fetch if needed
   Future<List<Place>> getAllPlaces() async {
-    // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 500));
-    return List.from(_places);
+    final snapshot = await _firestore
+        .collection(_collection)
+        .orderBy('timestamp', descending: true)
+        .get();
+    return snapshot.docs
+        .map((doc) => Place.fromMap(doc.data(), doc.id))
+        .toList();
   }
 
   Future<void> addPlace(Place place) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    _places.add(place);
+    await _firestore.collection(_collection).add(place.toMap());
   }
 
   Future<void> updatePlace(Place updatedPlace) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    final index = _places.indexWhere((p) => p.id == updatedPlace.id);
-    if (index != -1) {
-      _places[index] = updatedPlace;
-    }
+    await _firestore
+        .collection(_collection)
+        .doc(updatedPlace.id)
+        .update(updatedPlace.toMap());
   }
 
   Future<void> deletePlace(String id) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    _places.removeWhere((p) => p.id == id);
+    await _firestore.collection(_collection).doc(id).delete();
   }
 }
