@@ -244,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
-          shape: RoundedRectangleAtMost12(
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
         ),
@@ -272,9 +272,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ],
     );
   }
-}
-
-// Helper for RoundedRectangleBorder with constraint
-class RoundedRectangleAtMost12 extends RoundedRectangleBorder {
-  const RoundedRectangleAtMost12({super.borderRadius});
 }
