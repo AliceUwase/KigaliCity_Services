@@ -27,6 +27,7 @@ class PlaceRepository {
             name: 'PlaceRepository',
             error: error,
           );
+          throw error;
         });
   }
 

@@ -64,7 +64,31 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      if (filteredList.isEmpty)
+                      if (state.status == DirectoryStatus.loading)
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 40),
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      else if (state.status == DirectoryStatus.error)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 40),
+                            child: Column(
+                              children: [
+                                Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                                const SizedBox(height: 16),
+                                Text(
+                                  state.errorMessage ?? 'Something went wrong',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Colors.grey[500], fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      else if (filteredList.isEmpty)
                         _buildEmptyState()
                       else
                         ListView.builder(
@@ -179,6 +203,10 @@ class _HomeScreenState extends State<HomeScreen> {
       'Restaurant',
       'Café',
       'Police Station',
+      'School',
+      'Bank',
+      'Pharmacy',
+      'Other',
     ];
 
     return Column(

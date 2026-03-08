@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/models/place_model.dart';
 import '../../logic/cubits/directory/directory_cubit.dart';
 import '../../logic/cubits/directory/directory_state.dart';
@@ -14,7 +15,10 @@ class MyListingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<DirectoryCubit, DirectoryState>(
       builder: (context, state) {
-        final listings = state.allPlaces;
+        final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+        final myListings = state.allPlaces
+            .where((p) => p.userId == currentUserId)
+            .toList();
 
         return Scaffold(
           backgroundColor: Colors.white,
@@ -31,7 +35,7 @@ class MyListingsScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
-                            'All Listings',
+                            'My Listings',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -39,7 +43,7 @@ class MyListingsScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '${listings.length} total',
+                            '${myListings.length} total',
                             style: TextStyle(
                               color: Colors.grey[500],
                               fontSize: 13,
@@ -48,15 +52,24 @@ class MyListingsScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      if (listings.isEmpty)
+                      if (state.status == DirectoryStatus.loading)
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 40),
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      else if (state.status == DirectoryStatus.error)
+                        _buildErrorState(state.errorMessage)
+                      else if (myListings.isEmpty)
                         _buildEmptyState()
                       else
                         ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: listings.length,
+                          itemCount: myListings.length,
                           itemBuilder: (context, index) {
-                            final place = listings[index];
+                            final place = myListings[index];
                             return PlaceCard(
                               name: place.name,
                               address: place.address,
@@ -107,8 +120,32 @@ class MyListingsScreen extends StatelessWidget {
             Icon(Icons.list_alt, size: 64, color: Colors.grey[300]),
             const SizedBox(height: 16),
             Text(
-              'No listings yet',
+              'You have no listings yet',
               style: TextStyle(color: Colors.grey[500], fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tap + to add your first listing',
+              style: TextStyle(color: Colors.grey[400], fontSize: 13),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String? message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40),
+        child: Column(
+          children: [
+            Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+            const SizedBox(height: 16),
+            Text(
+              message ?? 'Something went wrong',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey[500], fontSize: 14),
             ),
           ],
         ),
@@ -229,7 +266,7 @@ class MyListingsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'All Listings',
+                    'My Listings',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -237,7 +274,7 @@ class MyListingsScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Browse and manage all places',
+                    'Manage your places',
                     style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                 ],

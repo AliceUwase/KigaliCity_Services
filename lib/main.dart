@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'presentation/screens/auth/login_screen.dart';
+import 'presentation/screens/auth/email_verification_screen.dart';
+import 'presentation/screens/main_screen.dart';
 import 'logic/cubits/directory/directory_cubit.dart';
 import 'data/repositories/place_repository.dart';
 
@@ -31,7 +34,30 @@ class KigaliCityServicesApp extends StatelessWidget {
           title: 'Kigali City Services',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
-          home: const LoginScreen(),
+          home: StreamBuilder<User?>(
+            // userChanges() fires when emailVerified changes after user.reload(),
+            // unlike authStateChanges() which only fires on sign-in / sign-out.
+            stream: FirebaseAuth.instance.userChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              final user = snapshot.data;
+
+              if (user == null) {
+                return const LoginScreen();
+              }
+
+              if (!user.emailVerified) {
+                return const EmailVerificationScreen();
+              }
+
+              return const MainScreen();
+            },
+          ),
         ),
       ),
     );

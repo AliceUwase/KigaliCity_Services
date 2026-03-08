@@ -1,30 +1,40 @@
 import 'package:equatable/equatable.dart';
 import '../../../data/models/place_model.dart';
 
+enum DirectoryStatus { initial, loading, loaded, error }
+
 class DirectoryState extends Equatable {
+  final DirectoryStatus status;
   final String selectedCategory;
   final String searchQuery;
   final List<Place> allPlaces;
+  final String? errorMessage;
 
   const DirectoryState({
+    this.status = DirectoryStatus.initial,
     this.selectedCategory = 'All',
     this.searchQuery = '',
     this.allPlaces = const <Place>[],
+    this.errorMessage,
   });
 
   factory DirectoryState.initial() {
-    return const DirectoryState(allPlaces: <Place>[]);
+    return const DirectoryState(status: DirectoryStatus.initial);
   }
 
   DirectoryState copyWith({
+    DirectoryStatus? status,
     String? selectedCategory,
     String? searchQuery,
     List<Place>? allPlaces,
+    String? errorMessage,
   }) {
     return DirectoryState(
+      status: status ?? this.status,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       searchQuery: searchQuery ?? this.searchQuery,
       allPlaces: allPlaces ?? this.allPlaces,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 
@@ -48,5 +58,11 @@ class DirectoryState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [selectedCategory, searchQuery, allPlaces];
+  List<Object?> get props => [
+    status,
+    selectedCategory,
+    searchQuery,
+    allPlaces,
+    errorMessage,
+  ];
 }

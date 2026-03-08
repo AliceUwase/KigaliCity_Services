@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../data/models/place_model.dart';
 
 class PlaceDetailsScreen extends StatelessWidget {
@@ -6,15 +8,58 @@ class PlaceDetailsScreen extends StatelessWidget {
 
   const PlaceDetailsScreen({super.key, required this.place});
 
+  Future<void> _callPhone(BuildContext context) async {
+    final uri = Uri(scheme: 'tel', path: place.phone);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open phone dialer.')),
+        );
+      }
+    }
+  }
+
+  Future<void> _openDirections(BuildContext context) async {
+    final lat = place.latitude ?? '';
+    final lng = place.longitude ?? '';
+
+    final Uri uri;
+    if (lat.isNotEmpty && lng.isNotEmpty) {
+      uri = Uri.parse(
+        'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng',
+      );
+    } else {
+      uri = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(place.address)}',
+      );
+    }
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open Google Maps.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final lat = double.tryParse(place.latitude ?? '');
+    final lng = double.tryParse(place.longitude ?? '');
+    final hasCoordinates = lat != null && lng != null;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(context),
+            _buildHeader(context, lat, lng, hasCoordinates),
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
@@ -28,28 +73,49 @@ class PlaceDetailsScreen extends StatelessWidget {
                       color: Color(0xFF1E293B),
                     ),
                   ),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1557F2).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      place.category,
+                      style: const TextStyle(
+                        color: Color(0xFF1557F2),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 32),
                   _buildInfoTile(
-                    context,
                     icon: Icons.location_on_outlined,
                     label: 'Address',
                     value: place.address,
                   ),
                   _buildInfoTile(
-                    context,
                     icon: Icons.phone_outlined,
                     label: 'Phone',
                     value: place.phone,
                   ),
-                  _buildInfoTile(
-                    context,
-                    icon: Icons.access_time_outlined,
-                    label: 'Hours',
-                    value: 'See contact for hours',
-                  ),
-                  const SizedBox(height: 32),
-                  _buildIntegrationHint(context),
-                  const SizedBox(height: 100), // Space for bottom buttons
+                  if (place.description.isNotEmpty)
+                    _buildInfoTile(
+                      icon: Icons.info_outline,
+                      label: 'Description',
+                      value: place.description,
+                    ),
+                  if (hasCoordinates)
+                    _buildInfoTile(
+                      icon: Icons.gps_fixed,
+                      label: 'Coordinates',
+                      value: '${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}',
+                    ),
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
@@ -60,67 +126,103 @@ class PlaceDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(
+    BuildContext context,
+    double? lat,
+    double? lng,
+    bool hasCoordinates,
+  ) {
+    if (hasCoordinates) {
+      return SizedBox(
+        width: double.infinity,
+        height: 300,
+        child: Stack(
+          children: [
+            GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: LatLng(lat!, lng!),
+                zoom: 15,
+              ),
+              markers: {
+                Marker(
+                  markerId: MarkerId(place.id),
+                  position: LatLng(lat, lng),
+                  infoWindow: InfoWindow(title: place.name),
+                ),
+              },
+              zoomControlsEnabled: false,
+              scrollGesturesEnabled: false,
+              myLocationButtonEnabled: false,
+              mapToolbarEnabled: false,
+              rotateGesturesEnabled: false,
+              tiltGesturesEnabled: false,
+            ),
+            // Back button
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.black87),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Fallback: no coordinates
     return Container(
       width: double.infinity,
       height: 300,
-      decoration: const BoxDecoration(
-        color: Color(
-          0xFFDBEAFE,
-        ), // Light blue background matching map placeholder
-      ),
+      decoration: const BoxDecoration(color: Color(0xFFDBEAFE)),
       child: Stack(
         children: [
-          // Map Placeholder Design
           Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 48), // Padding for status bar
-                  const Icon(
-                    Icons.location_on,
-                    color: Color(0xFF1557F2),
-                    size: 48,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 48),
+                const Icon(
+                  Icons.location_off_outlined,
+                  color: Color(0xFF1557F2),
+                  size: 48,
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'No Coordinates Available',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1E40AF),
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'View on Google Maps',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E40AF),
-                    ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  place.address,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF1E40AF),
+                    height: 1.4,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    place.description,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF1E40AF),
-                      height: 1.4,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          // Back Button
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.white,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.black87),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                ],
+              child: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.black87),
+                  onPressed: () => Navigator.pop(context),
+                ),
               ),
             ),
           ),
@@ -129,8 +231,7 @@ class PlaceDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoTile(
-    BuildContext context, {
+  Widget _buildInfoTile({
     required IconData icon,
     required String label,
     required String value,
@@ -143,6 +244,7 @@ class PlaceDetailsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(8),
@@ -161,6 +263,7 @@ class PlaceDetailsScreen extends StatelessWidget {
                   label,
                   style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   value,
                   style: const TextStyle(
@@ -170,33 +273,6 @@ class PlaceDetailsScreen extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIntegrationHint(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFEFF6FF),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFDBEAFE)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.open_in_new, color: Color(0xFF3B82F6), size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              'Google Maps Integration Available\nTo embed an interactive map here, add your Google Maps API key to the project.',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.blue[800],
-                height: 1.4,
-              ),
             ),
           ),
         ],
@@ -221,7 +297,7 @@ class PlaceDetailsScreen extends StatelessWidget {
         children: [
           Expanded(
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () => _callPhone(context),
               icon: const Icon(Icons.phone, color: Colors.white, size: 20),
               label: const Text('Call Now'),
               style: ElevatedButton.styleFrom(
@@ -238,7 +314,7 @@ class PlaceDetailsScreen extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () => _openDirections(context),
               icon: const Icon(
                 Icons.navigation_outlined,
                 color: Colors.white,

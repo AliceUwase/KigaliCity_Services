@@ -13,10 +13,21 @@ class DirectoryCubit extends Cubit<DirectoryState> {
   }
 
   void _subscribeToPlaces() {
+    emit(state.copyWith(status: DirectoryStatus.loading));
     _subscription?.cancel();
-    _subscription = _repository.getPlacesStream().listen((places) {
-      emit(state.copyWith(allPlaces: places));
-    });
+    _subscription = _repository.getPlacesStream().listen(
+      (places) {
+        emit(state.copyWith(status: DirectoryStatus.loaded, allPlaces: places));
+      },
+      onError: (error) {
+        emit(
+          state.copyWith(
+            status: DirectoryStatus.error,
+            errorMessage: error.toString(),
+          ),
+        );
+      },
+    );
   }
 
   void selectCategory(String category) {
