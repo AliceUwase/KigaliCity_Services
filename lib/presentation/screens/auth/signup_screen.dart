@@ -71,13 +71,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } on FirebaseAuthException catch (e) {
       setState(() {
         _errorMessage = switch (e.code) {
-          'email-already-in-use' =>
-            'An account already exists for this email.',
+          'email-already-in-use' => 'An account already exists for this email.',
           'invalid-email' => 'Please enter a valid email address.',
-          'weak-password' =>
-            'Password is too weak. Use at least 6 characters.',
-          'operation-not-allowed' =>
-            'Email/password accounts are not enabled.',
+          'weak-password' => 'Password is too weak. Use at least 6 characters.',
+          'operation-not-allowed' => 'Email/password accounts are not enabled.',
           _ => 'Account creation failed. Please try again.',
         };
       });
@@ -96,7 +93,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF00A36C), Color(0xFF007FFF)],
+            colors: [Color(0xFF1557F2), Color(0xFF0D47A1)],
           ),
         ),
         child: Column(
@@ -110,7 +107,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               child: const Icon(
                 Icons.location_on,
-                color: Color(0xFF00A36C),
+                color: Color(0xFF1557F2),
                 size: 40,
               ),
             ),
@@ -204,9 +201,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         isObscured: _obscureConfirmPassword,
                         onToggleObscure: () {
                           setState(
-                            () =>
-                                _obscureConfirmPassword =
-                                    !_obscureConfirmPassword,
+                            () => _obscureConfirmPassword =
+                                !_obscureConfirmPassword,
                           );
                         },
                       ),
@@ -241,10 +237,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ],
                       const SizedBox(height: 40),
                       _buildGradientButton(
-                        text:
-                            _isLoading
-                                ? 'Creating Account...'
-                                : 'Create Account',
+                        text: _isLoading
+                            ? 'Creating Account...'
+                            : 'Create Account',
                         onPressed: _isLoading ? null : _createAccount,
                         isLoading: _isLoading,
                       ),
@@ -264,7 +259,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               child: const Text(
                                 'Sign In',
                                 style: TextStyle(
-                                  color: Color(0xFF007FFF),
+                                  color: Color(0xFF1557F2),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -347,21 +342,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         gradient: LinearGradient(
-          colors:
-              onPressed == null
-                  ? [Colors.grey[400]!, Colors.grey[500]!]
-                  : const [Color(0xFF00A36C), Color(0xFF007FFF)],
+          colors: onPressed == null
+              ? [Colors.grey[400]!, Colors.grey[500]!]
+              : const [Color(0xFF1557F2), Color(0xFF0D47A1)],
         ),
-        boxShadow:
-            onPressed == null
-                ? []
-                : [
-                    BoxShadow(
-                      color: const Color(0xFF007FFF).withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+        boxShadow: onPressed == null
+            ? []
+            : [
+                BoxShadow(
+                  color: const Color(0xFF1557F2).withValues(alpha: 0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: ElevatedButton(
         onPressed: onPressed,

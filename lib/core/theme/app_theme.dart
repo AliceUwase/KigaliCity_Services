@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static const Color primaryColor = Color(
     0xFF1557F2,
-  ); // Vibrant Blue from screenshots
+  );
   static const Color backgroundColor = Color(0xFFF8F9FA);
 
   static ThemeData get lightTheme {
@@ -31,7 +31,7 @@ class AppTheme {
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
       ),
-      fontFamily: 'Roboto', // Default for now
+      fontFamily: 'Roboto',
     );
   }
 }

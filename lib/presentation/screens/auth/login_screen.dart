@@ -82,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF00A36C), Color(0xFF007FFF)],
+            colors: [Color(0xFF1557F2), Color(0xFF0D47A1)],
           ),
         ),
         child: Column(
@@ -96,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               child: const Icon(
                 Icons.location_on,
-                color: Color(0xFF00A36C),
+                color: Color(0xFF1557F2),
                 size: 40,
               ),
             ),
@@ -172,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: const Text(
                             'Forgot Password?',
                             style: TextStyle(
-                              color: Color(0xFF007FFF),
+                              color: Color(0xFF1557F2),
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -236,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: const Text(
                                 'Sign Up',
                                 style: TextStyle(
-                                  color: Color(0xFF007FFF),
+                                  color: Color(0xFF1557F2),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -318,21 +318,19 @@ class _LoginScreenState extends State<LoginScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         gradient: LinearGradient(
-          colors:
-              onPressed == null
-                  ? [Colors.grey[400]!, Colors.grey[500]!]
-                  : const [Color(0xFF00A36C), Color(0xFF007FFF)],
+          colors: onPressed == null
+              ? [Colors.grey[400]!, Colors.grey[500]!]
+              : const [Color(0xFF1557F2), Color(0xFF0D47A1)],
         ),
-        boxShadow:
-            onPressed == null
-                ? []
-                : [
-                    BoxShadow(
-                      color: const Color(0xFF007FFF).withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+        boxShadow: onPressed == null
+            ? []
+            : [
+                BoxShadow(
+                  color: const Color(0xFF1557F2).withValues(alpha: 0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: ElevatedButton(
         onPressed: onPressed,

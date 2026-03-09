@@ -87,7 +87,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF00A36C), Color(0xFF007FFF)],
+            colors: [Color(0xFF1557F2), Color(0xFF0D47A1)],
           ),
         ),
         child: Column(
@@ -101,7 +101,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               ),
               child: const Icon(
                 Icons.mark_email_unread_outlined,
-                color: Color(0xFF00A36C),
+                color: Color(0xFF1557F2),
                 size: 40,
               ),
             ),
@@ -213,16 +213,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       width: double.infinity,
                       height: 56,
                       child: OutlinedButton(
-                        onPressed:
-                            (_isResending || _resentRecently)
-                                ? null
-                                : _resendEmail,
+                        onPressed: (_isResending || _resentRecently)
+                            ? null
+                            : _resendEmail,
                         style: OutlinedButton.styleFrom(
                           side: BorderSide(
-                            color:
-                                (_isResending || _resentRecently)
-                                    ? Colors.grey[300]!
-                                    : const Color(0xFF1557F2),
+                            color: (_isResending || _resentRecently)
+                                ? Colors.grey[300]!
+                                : const Color(0xFF1557F2),
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -232,17 +230,17 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                             ? const SizedBox(
                                 width: 22,
                                 height: 22,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
                               )
                             : Text(
                                 _resentRecently
                                     ? 'Email Sent ✓'
                                     : 'Resend Verification Email',
                                 style: TextStyle(
-                                  color:
-                                      (_isResending || _resentRecently)
-                                          ? Colors.grey[400]
-                                          : const Color(0xFF1557F2),
+                                  color: (_isResending || _resentRecently)
+                                      ? Colors.grey[400]
+                                      : const Color(0xFF1557F2),
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
                                 ),
