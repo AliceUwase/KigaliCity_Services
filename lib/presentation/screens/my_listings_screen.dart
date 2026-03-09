@@ -16,18 +16,17 @@ class MyListingsScreen extends StatelessWidget {
     return BlocBuilder<DirectoryCubit, DirectoryState>(
       builder: (context, state) {
         final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-        final myListings = state.allPlaces
-            .where((p) => p.userId == currentUserId)
-            .toList();
+        final myListings =
+            state.allPlaces.where((p) => p.userId == currentUserId).toList();
 
         return Scaffold(
           backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildHeader(context),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
+          body: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(child: _buildHeader(context)),
+              SliverPadding(
+                padding: const EdgeInsets.all(20.0),
+                sliver: SliverToBoxAdapter(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -62,49 +61,54 @@ class MyListingsScreen extends StatelessWidget {
                       else if (state.status == DirectoryStatus.error)
                         _buildErrorState(state.errorMessage)
                       else if (myListings.isEmpty)
-                        _buildEmptyState()
-                      else
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: myListings.length,
-                          itemBuilder: (context, index) {
-                            final place = myListings[index];
-                            return PlaceCard(
-                              name: place.name,
-                              address: place.address,
-                              phone: place.phone,
-                              rating: place.rating,
-                              userId: place.userId,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        PlaceDetailsScreen(place: place),
-                                  ),
-                                );
-                              },
-                              onEdit: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        AddListingScreen(place: place),
-                                  ),
-                                );
-                              },
-                              onDelete: () {
-                                _showDeleteDialog(context, place);
-                              },
-                            );
-                          },
-                        ),
+                        _buildEmptyState(),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              if (state.status == DirectoryStatus.loaded &&
+                  myListings.isNotEmpty)
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final place = myListings[index];
+                        return PlaceCard(
+                          name: place.name,
+                          address: place.address,
+                          phone: place.phone,
+                          rating: place.rating,
+                          userId: place.userId,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PlaceDetailsScreen(place: place),
+                              ),
+                            );
+                          },
+                          onEdit: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    AddListingScreen(place: place),
+                              ),
+                            );
+                          },
+                          onDelete: () {
+                            _showDeleteDialog(context, place);
+                          },
+                        );
+                      },
+                      childCount: myListings.length,
+                    ),
+                  ),
+                ),
+              const SliverToBoxAdapter(child: SizedBox(height: 20)),
+            ],
           ),
         );
       },

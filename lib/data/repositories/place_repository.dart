@@ -13,22 +13,17 @@ class PlaceRepository {
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) {
-          developer.log(
-            'Received ${snapshot.docs.length} places from Firestore',
-            name: 'PlaceRepository',
-          );
-          return snapshot.docs.map((doc) {
-            return Place.fromMap(doc.data(), doc.id);
-          }).toList();
-        })
-        .handleError((error) {
-          developer.log(
-            'Error in places stream: $error',
-            name: 'PlaceRepository',
-            error: error,
-          );
-          throw error;
-        });
+      return snapshot.docs.map((doc) {
+        return Place.fromMap(doc.data(), doc.id);
+      }).toList();
+    }).handleError((error) {
+      developer.log(
+        'Error in places stream: $error',
+        name: 'PlaceRepository',
+        error: error,
+      );
+      throw error;
+    });
   }
 
   Future<List<Place>> getAllPlaces() async {
@@ -58,9 +53,8 @@ class PlaceRepository {
   Future<void> addPlace(Place place) async {
     try {
       developer.log('Adding place: ${place.name}', name: 'PlaceRepository');
-      final docRef = await _firestore
-          .collection(_collection)
-          .add(place.toMap());
+      final docRef =
+          await _firestore.collection(_collection).add(place.toMap());
       developer.log(
         'Place added with ID: ${docRef.id}',
         name: 'PlaceRepository',

@@ -30,12 +30,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
         return Scaffold(
           backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildHeader(context),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
+          body: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(child: _buildHeader(context)),
+              SliverPadding(
+                padding: const EdgeInsets.all(20.0),
+                sliver: SliverToBoxAdapter(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -77,49 +77,57 @@ class _HomeScreenState extends State<HomeScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 40),
                             child: Column(
                               children: [
-                                Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                                Icon(Icons.error_outline,
+                                    size: 64, color: Colors.red[300]),
                                 const SizedBox(height: 16),
                                 Text(
                                   state.errorMessage ?? 'Something went wrong',
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(color: Colors.grey[500], fontSize: 14),
+                                  style: TextStyle(
+                                      color: Colors.grey[500], fontSize: 14),
                                 ),
                               ],
                             ),
                           ),
                         )
                       else if (filteredList.isEmpty)
-                        _buildEmptyState()
-                      else
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: filteredList.length,
-                          itemBuilder: (context, index) {
-                            final place = filteredList[index];
-                            return PlaceCard(
-                              name: place.name,
-                              address: place.address,
-                              phone: place.phone,
-                              rating: place.rating,
-                              userId: place.userId,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        PlaceDetailsScreen(place: place),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
+                        _buildEmptyState(),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              if (state.status == DirectoryStatus.loaded &&
+                  filteredList.isNotEmpty)
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final place = filteredList[index];
+                        return PlaceCard(
+                          name: place.name,
+                          address: place.address,
+                          phone: place.phone,
+                          rating: place.rating,
+                          userId: place.userId,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PlaceDetailsScreen(place: place),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      childCount: filteredList.length,
+                    ),
+                  ),
+                ),
+              // Add some bottom padding
+              const SliverToBoxAdapter(child: SizedBox(height: 20)),
+            ],
           ),
         );
       },
