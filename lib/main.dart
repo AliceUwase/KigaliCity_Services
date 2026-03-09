@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
+import 'core/utils/app_scroll_behavior.dart';
 import 'presentation/screens/auth/login_screen.dart';
 import 'presentation/screens/auth/email_verification_screen.dart';
 import 'presentation/screens/main_screen.dart';
@@ -34,6 +35,7 @@ class KigaliCityServicesApp extends StatelessWidget {
           title: 'Kigali City Services',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.lightTheme,
+          scrollBehavior: AppScrollBehavior(),
           home: StreamBuilder<User?>(
             // userChanges() fires when emailVerified changes after user.reload(),
             // unlike authStateChanges() which only fires on sign-in / sign-out.

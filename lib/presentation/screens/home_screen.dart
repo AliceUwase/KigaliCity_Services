@@ -237,20 +237,17 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 16),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
           child: Row(
-            children: [
-              const SizedBox(width: 20),
-              ...categories.map((category) {
-                return CategoryFilterChip(
-                  label: category,
-                  count: state.getCountForCategory(category),
-                  isSelected: state.selectedCategory == category,
-                  onTap: () =>
-                      context.read<DirectoryCubit>().selectCategory(category),
-                );
-              }),
-              const SizedBox(width: 10),
-            ],
+            children: categories.map((category) {
+              return CategoryFilterChip(
+                label: category,
+                count: state.getCountForCategory(category),
+                isSelected: state.selectedCategory == category,
+                onTap: () =>
+                    context.read<DirectoryCubit>().selectCategory(category),
+              );
+            }).toList(),
           ),
         ),
       ],
